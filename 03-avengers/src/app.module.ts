@@ -1,6 +1,9 @@
-import { Module } from '@nestjs/common';
-import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+
+import { Module } from '@nestjs/common';
+import { MongooseModule } from '@nestjs/mongoose';
+import { ServeStaticModule } from '@nestjs/serve-static';
+
 import { AvengersModule } from './avengers/avengers.module';
 
 @Module({
@@ -9,6 +12,8 @@ import { AvengersModule } from './avengers/avengers.module';
       rootPath: join(__dirname, '..', 'public'),
       serveRoot: '/',
     }),
+    MongooseModule.forRoot('mongodb://localhost:27017/nest-avengers'),
+
     AvengersModule,
   ],
   controllers: [],

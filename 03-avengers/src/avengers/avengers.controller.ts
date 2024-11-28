@@ -28,14 +28,17 @@ export class AvengersController {
     return this.avengersService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.avengersService.findOne(+id);
+  @Get(':term')
+  findOne(@Param('term') term: string) {
+    return this.avengersService.findOne(term);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateAvengerDto: UpdateAvengerDto) {
-    return this.avengersService.update(+id, updateAvengerDto);
+  @Patch(':term')
+  update(
+    @Param('term') term: string,
+    @Body() updateAvengerDto: UpdateAvengerDto,
+  ) {
+    return this.avengersService.update(term, updateAvengerDto);
   }
 
   @Delete(':id')

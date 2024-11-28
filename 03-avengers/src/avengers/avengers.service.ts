@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { CreateAvengerDto } from './dto/create-avenger.dto';
 import { UpdateAvengerDto } from './dto/update-avenger.dto';
-import { Model } from 'mongoose';
+import { isValidObjectId, Model } from 'mongoose';
 import { Avenger } from './entities/avenger.entity';
 import { InjectModel } from '@nestjs/mongoose';
 
@@ -40,12 +40,38 @@ export class AvengersService {
     return `This action returns all avengers`;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} avenger`;
+  async findOne(term: string) {
+    let avenger: Avenger;
+
+    if (isValidObjectId(term)) {
+      avenger = await this.avengerModel.findById(term);
+    }
+
+    if (!avenger) {
+      const filter = !isNaN(Number(term))
+        ? { no: term }
+        : { name: term.toLowerCase().trim() };
+
+      avenger = await this.avengerModel.findOne(filter);
+    }
+
+    if (avenger) return avenger;
+
+    throw new BadRequestException(
+      `Avenger with id or no or name ${term} not found`,
+    );
   }
 
-  update(id: number, updateAvengerDto: UpdateAvengerDto) {
-    return `This action updates a #${id} avenger`;
+  async update(term: string, updateAvengerDto: UpdateAvengerDto) {
+    const pokemon = await this.findOne(term);
+
+    if (updateAvengerDto.name) {
+      updateAvengerDto.name = updateAvengerDto.name.toLowerCase();
+    }
+
+    await pokemon.updateOne(updateAvengerDto);
+
+    return { ...pokemon.toJSON(), ...updateAvengerDto };
   }
 
   remove(id: number) {

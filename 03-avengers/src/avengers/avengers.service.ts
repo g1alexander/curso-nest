@@ -24,15 +24,7 @@ export class AvengersService {
 
       return avenger;
     } catch (error) {
-      if (error.code === 11000) {
-        throw new BadRequestException(
-          `Avenger already exists - ${JSON.stringify(error.keyValue)}`,
-        );
-      }
-      console.error(error);
-      throw new InternalServerErrorException(
-        'Something went wrong, check the logs',
-      );
+      this.handleExceptions(error);
     }
   }
 
@@ -63,18 +55,44 @@ export class AvengersService {
   }
 
   async update(term: string, updateAvengerDto: UpdateAvengerDto) {
-    const pokemon = await this.findOne(term);
+    const avenger = await this.findOne(term);
 
     if (updateAvengerDto.name) {
       updateAvengerDto.name = updateAvengerDto.name.toLowerCase();
     }
 
-    await pokemon.updateOne(updateAvengerDto);
+    try {
+      await avenger.updateOne(updateAvengerDto);
 
-    return { ...pokemon.toJSON(), ...updateAvengerDto };
+      return { ...avenger.toJSON(), ...updateAvengerDto };
+    } catch (error) {
+      this.handleExceptions(error);
+    }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} avenger`;
+  async remove(id: string) {
+    // const avenger = await this.findOne(id);
+
+    // await avenger.deleteOne();
+
+    // return this.avengerModel.findByIdAndDelete(id);
+
+    const { deletedCount } = await this.avengerModel.deleteOne({ _id: id });
+
+    if (deletedCount === 0) {
+      throw new BadRequestException(`Id ${id} not found`);
+    }
+  }
+
+  private handleExceptions(error: any) {
+    if (error.code === 11000) {
+      throw new BadRequestException(
+        `Avenger already exists - ${JSON.stringify(error.keyValue)}`,
+      );
+    }
+    console.error(error);
+    throw new InternalServerErrorException(
+      'Something went wrong, check the logs',
+    );
   }
 }

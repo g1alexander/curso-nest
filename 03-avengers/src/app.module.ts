@@ -5,6 +5,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ServeStaticModule } from '@nestjs/serve-static';
 
 import { AvengersModule } from './avengers/avengers.module';
+import { CommonModule } from './common/common.module';
 
 @Module({
   imports: [
@@ -15,6 +16,8 @@ import { AvengersModule } from './avengers/avengers.module';
     MongooseModule.forRoot('mongodb://localhost:27017/nest-avengers'),
 
     AvengersModule,
+
+    CommonModule,
   ],
   controllers: [],
   providers: [],

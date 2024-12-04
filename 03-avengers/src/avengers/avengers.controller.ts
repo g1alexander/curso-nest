@@ -12,6 +12,7 @@ import {
 import { AvengersService } from './avengers.service';
 import { CreateAvengerDto } from './dto/create-avenger.dto';
 import { UpdateAvengerDto } from './dto/update-avenger.dto';
+import { ParseMongoIdPipe } from 'src/common/pipes/parse-mongo-id.pipe';
 
 @Controller('avengers')
 export class AvengersController {
@@ -42,7 +43,7 @@ export class AvengersController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.avengersService.remove(+id);
+  remove(@Param('id', ParseMongoIdPipe) id: string) {
+    return this.avengersService.remove(id);
   }
 }
